@@ -552,6 +552,108 @@ Developed a secure, Python-based platform using Flask and SQLite to manage and t
       </div>
     </footer>
 
+<!-- ✅ Tailwind CSS CDN -->
+
+<!-- 💬 Chatbot Widget -->
+<script type="module">
+    import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client@latest/+esm";
+
+    let client;
+
+    async function initClient() {
+      client = await Client.connect("vaibhav345/Ask_about_me");
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const chatBox = document.getElementById("chatBox");
+
+      const userMsg = input.value.trim();
+      if (!userMsg) return;
+
+      chatBox.innerHTML += `
+        <div class="text-right mb-2">
+          <span class="bg-blue-500 text-white px-3 py-2 rounded-lg inline-block">${userMsg}</span>
+        </div>
+      `;
+      input.value = "";
+
+      try {
+        const result = await client.predict("/respond", {
+          message: userMsg,
+          chat_history: [],
+        });
+
+        const botReply = result.data[0][result.data[0].length - 1][1];
+
+        chatBox.innerHTML += `
+          <div class="text-left mb-2">
+            <span class="bg-gray-200 text-gray-800 px-3 py-2 rounded-lg inline-block">${botReply}</span>
+          </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (err) {
+        console.error(err);
+        chatBox.innerHTML += `
+          <div class="text-left mb-2">
+            <span class="bg-red-200 text-red-800 px-3 py-2 rounded-lg inline-block">⚠️ Failed to connect to chatbot.</span>
+          </div>
+        `;
+      }
+    }
+
+    window.onload = initClient;
+    window.sendMessage = sendMessage;
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+<div id="chatbot-widget" class="fixed bottom-6 right-6 z-50">
+  <!-- Chat Button -->
+  <button id="chatBtn"
+    class="fixed bottom-6 right-6 bg-yellow-500 text-white rounded-full p-4 shadow-lg hover:bg-yellow-700 transition">
+    💬
+  </button>
+
+  <!-- Chat Window -->
+  <div id="chatWindow"
+    class="fixed bottom-20 bg-white right-6 w-80 rounded-xl shadow-2xl border p-2 flex flex-col"">
+    <div class="flex justify-between items-center border-b pb-2 mb-2 text-center px-4 py-2 rounded-t-xl">
+      <h2 class="text-lg font-semibold text-black">Ask About Me</h2>
+      <button id="closeChat" class="text-gray-500 hover:text-gray-700">✖</button>
+    </div>
+
+    <div id="chatBox" class="flex-1 overflow-y-auto mb-2 h-64">
+      <div class="text-left mb-2">
+        <span class="bg-gray-200 text-gray-800 px-3 py-2 rounded-lg inline-block">
+          👋 Hi, I'm Vaibhav’s AI assistant. Ask me anything about him!
+        </span>
+      </div>
+    </div>
+
+    <div class="flex">
+      <input id="userInput" type="text" placeholder="Type a message..."
+        class="flex-1 border rounded-l-lg px-3 py-2 outline-none focus:ring focus:ring-yellow-300" />
+      <button onclick="sendMessage()" class="bg-yellow-500 text-white px-4 rounded-r-lg">Send</button>
+    </div>
+  </div>
+</div>
+  <script>
+    // Toggle chat visibility
+    const chatBtn = document.getElementById("chatBtn");
+    const chatWindow = document.getElementById("chatWindow");
+    const closeChat = document.getElementById("closeChat");
+
+    chatBtn.addEventListener("click", () => {
+      chatWindow.classList.toggle("hidden");
+    });
+    closeChat.addEventListener("click", () => {
+      chatWindow.classList.add("hidden");
+    });
+  </script>
+
+
+
     
 
 
